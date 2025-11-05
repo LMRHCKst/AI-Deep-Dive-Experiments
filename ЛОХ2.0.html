@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="ru" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Аналитический отчет: МММ 2.0</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Slate Gray & Amber -->
+    <!-- Application Structure Plan: Отчет выполнен в формате одностраничного приложения (SPA) с вертикальной навигацией. Такая структура позволяет последовательно ознакомиться с анализом, от общей идентификации проекта до итоговых выводов, сохраняя при этом целостность восприятия. Боковая панель навигации обеспечивает быстрый доступ к любому разделу, что удобно для специалистов, ищущих конкретную информацию. Интерактивные диаграммы и схемы выбраны для наглядной демонстрации ключевых рисков и механики работы, что более эффективно, чем сухой текст, и помогает быстрее понять суть угрозы. -->
+    <!-- Visualization & Content Choices: 1. Поток средств: Goal: Explain Ponzi scheme. Method: HTML/CSS diagram. Interaction: Hover highlights stages. Justification: A visual flow is more intuitive than text for understanding the money trail. 2. Доходность: Goal: Show unrealistic returns. Method: Bar chart (Chart.js). Interaction: Tooltips on hover. Justification: Directly compares MMM's promises to real-world financial instruments, highlighting the anomaly. 3. Распределение рисков: Goal: Visualize participant losses. Method: Doughnut chart (Chart.js). Interaction: Tooltips on hover. Justification: Effectively shows that the vast majority of participants are guaranteed to lose money. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8fafc;
+        }
+        .section-card {
+            background-color: white;
+            border-radius: 0.75rem;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .nav-link {
+            transition: all 0.2s;
+        }
+        .nav-link.active {
+            background-color: #1e293b;
+            color: white;
+            font-weight: 600;
+        }
+        .nav-link:not(.active):hover {
+            background-color: #f1f5f9;
+            color: #1e293b;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 500px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 300px;
+            max-height: 400px;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 350px;
+            }
+        }
+    </style>
+</head>
+<body class="text-slate-800">
+
+    <div class="min-h-screen lg:grid lg:grid-cols-12">
+        <aside class="lg:col-span-3 lg:h-screen lg:sticky top-0 p-4 lg:p-8 bg-white border-r border-slate-200">
+            <div class="flex items-center mb-8">
+                 <div class="w-10 h-10 bg-slate-900 text-white flex items-center justify-center rounded-full mr-3 text-xl font-bold">A</div>
+                <div>
+                    <h1 class="text-lg font-bold text-slate-900">Аналитический Отчет</h1>
+                    <p class="text-sm text-slate-500">Антифрод-департамент</p>
+                </div>
+            </div>
+            <nav id="nav-menu" class="flex flex-col space-y-2">
+                <a href="#identification" class="nav-link px-4 py-2 rounded-lg text-slate-600 font-medium">1. Идентификация</a>
+                <a href="#mechanism" class="nav-link px-4 py-2 rounded-lg text-slate-600 font-medium">2. Механизм</a>
+                <a href="#marketing" class="nav-link px-4 py-2 rounded-lg text-slate-600 font-medium">3. Маркетинг</a>
+                <a href="#comparison" class="nav-link px-4 py-2 rounded-lg text-slate-600 font-medium">4. Сравнение</a>
+                <a href="#risks" class="nav-link px-4 py-2 rounded-lg text-slate-600 font-medium">5. Риски</a>
+                <a href="#status" class="nav-link px-4 py-2 rounded-lg text-slate-600 font-medium">6. Статус</a>
+                <a href="#conclusion" class="nav-link px-4 py-2 rounded-lg text-slate-600 font-medium">7. Заключение</a>
+            </nav>
+            <div class="mt-10 pt-6 border-t border-slate-200">
+                <p class="text-xs text-slate-500">
+                    <strong>Статус:</strong> Конфиденциально<br>
+                    <strong>Дата:</strong> 19 октября 2025 г.<br>
+                    <strong>Аналитик:</strong> Старший специалист
+                </p>
+            </div>
+        </aside>
+
+        <main class="lg:col-span-9 p-4 sm:p-6 md:p-10">
+            <header class="mb-10">
+                <h2 class="text-3xl font-bold text-slate-900">Досье: Проект "МММ 2.0"</h2>
+                <p class="mt-2 text-slate-600">Комплексный анализ финансовой структуры с признаками мошенничества.</p>
+            </header>
+
+            <div class="space-y-12">
+                <section id="identification" class="section-card p-6 md:p-8">
+                    <h3 class="text-xl font-bold mb-4 text-slate-900">1. Идентификация проекта</h3>
+                    <p class="mb-6 text-slate-600">Данный раздел содержит базовую информацию о проекте "МММ 2.0", его ключевых фигурах и целях, сформулированных на основе анализа открытых источников. Эта информация является отправной точкой для оценки его истинной природы.</p>
+                    <div class="grid md:grid-cols-2 gap-6">
+                        <div>
+                            <h4 class="font-semibold mb-2">Название и позиционирование</h4>
+                            <p class="text-slate-600">Проект известен как "МММ 2.0" или "Касса взаимопомощи имени Мавроди". Официально позиционируется как "социально-финансовая сеть" или "клуб", где участники добровольно "оказывают друг другу помощь", а не инвестируют.</p>
+                        </div>
+                        <div>
+                            <h4 class="font-semibold mb-2">Ключевая фигура</h4>
+                            <p class="text-slate-600">Организатором и публичным лицом проекта является Даниил Юсупов, который позиционирует себя как последователя идей Сергея Мавроди. Он активно ведет социальные сети, где продвигает идеологию проекта.</p>
+                        </div>
+                        <div>
+                            <h4 class="font-semibold mb-2">Заявленная цель</h4>
+                            <p class="text-slate-600">Создание системы, в которой люди могут "помогать" друг другу финансово без посредничества банков и государства, стремясь к "финансовому апокалипсису" — разрушению существующей финансовой системы.</p>
+                        </div>
+                        <div>
+                            <h4 class="font-semibold mb-2">Реальная цель</h4>
+                            <p class="text-slate-600">Анализ показывает, что реальной целью является построение классической финансовой пирамиды для обогащения ее организаторов и ранних участников за счет средств, вложенных более поздними вкладчиками.</p>
+                        </div>
+                    </div>
+                </section>
+
+                <section id="mechanism" class="section-card p-6 md:p-8">
+                    <h3 class="text-xl font-bold mb-4 text-slate-900">2. Механизм функционирования</h3>
+                    <p class="mb-6 text-slate-600">Здесь раскрывается финансовая модель "МММ 2.0". Мы сравниваем официальную версию для участников с реальным механизмом движения денежных средств, который указывает на признаки схемы Понци.</p>
+                     <div class="grid lg:grid-cols-2 gap-8 items-center">
+                        <div class="space-y-4">
+                            <h4 class="font-semibold mb-2 text-center">Схема движения средств</h4>
+                            <div class="flow-diagram space-y-2">
+                                <div class="p-3 bg-blue-50 border border-blue-200 rounded-lg text-center transition-all duration-300 hover:bg-blue-100 hover:shadow-md">
+                                    <p class="font-semibold">Шаг 1: Привлечение</p>
+                                    <p class="text-sm text-slate-600">Новые участники вносят средства ("оказывают помощь").</p>
+                                </div>
+                                <div class="text-center text-blue-400">↓</div>
+                                <div class="p-3 bg-blue-50 border border-blue-200 rounded-lg text-center transition-all duration-300 hover:bg-blue-100 hover:shadow-md">
+                                    <p class="font-semibold">Шаг 2: Аккумуляция</p>
+                                    <p class="text-sm text-slate-600">Деньги поступают в общую систему и на счета организаторов.</p>
+                                </div>
+                                 <div class="text-center text-blue-400">↓</div>
+                                <div class="p-3 bg-green-50 border border-green-200 rounded-lg text-center transition-all duration-300 hover:bg-green-100 hover:shadow-md">
+                                    <p class="font-semibold">Шаг 3: Перераспределение</p>
+                                    <p class="text-sm text-slate-600">Часть новых средств идет на выплаты "дохода" старым участникам.</p>
+                                </div>
+                                 <div class="text-center text-red-400">↓</div>
+                                 <div class="p-3 bg-red-50 border border-red-200 rounded-lg text-center transition-all duration-300 hover:bg-red-100 hover:shadow-md">
+                                    <p class="font-semibold">Шаг 4: Коллапс</p>
+                                    <p class="text-sm text-slate-600">Приток новых вкладчиков иссякает, выплаты прекращаются.</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div>
+                             <h4 class="font-semibold mb-4 text-center">Сравнение доходности (% в месяц)</h4>
+                             <div class="chart-container">
+                                <canvas id="roiChart"></canvas>
+                             </div>
+                             <p class="text-sm text-center mt-4 text-slate-500">Обещания доходности "МММ 2.0" не имеют экономического обоснования и многократно превышают показатели легальных финансовых инструментов.</p>
+                        </div>
+                    </div>
+                </section>
+
+                <section id="marketing" class="section-card p-6 md:p-8">
+                    <h3 class="text-xl font-bold mb-4 text-slate-900">3. Анализ маркетинговой стратегии</h3>
+                     <p class="mb-6 text-slate-600">Проект использует многоуровневую маркетинговую стратегию, нацеленную на уязвимые группы населения. Основной упор делается на психологические триггеры, а не на финансовую логику.</p>
+                    <div class="space-y-4">
+                        <div class="flex items-start">
+                            <div class="flex-shrink-0 h-6 w-6 rounded-full bg-amber-500 text-white flex items-center justify-center mr-4 mt-1">✓</div>
+                            <div>
+                                <h4 class="font-semibold">Эксплуатация ностальгии</h4>
+                                <p class="text-slate-600">Активное использование символики и риторики МММ 1990-х, включая образы Сергея Мавроди и персонажа, схожего с Леней Голубковым, для вызова доверия у старшего поколения.</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start">
+                             <div class="flex-shrink-0 h-6 w-6 rounded-full bg-amber-500 text-white flex items-center justify-center mr-4 mt-1">✓</div>
+                            <div>
+                                <h4 class="font-semibold">Агрессивная реклама в соцсетях</h4>
+                                <p class="text-slate-600">Продвижение через Telegram-каналы, YouTube и ВКонтакте с демонстрацией "успешных" историй, дорогих покупок и призывами "изменить жизнь".</p>
+                            </div>
+                        </div>
+                         <div class="flex items-start">
+                             <div class="flex-shrink-0 h-6 w-6 rounded-full bg-amber-500 text-white flex items-center justify-center mr-4 mt-1">✓</div>
+                            <div>
+                                <h4 class="font-semibold">Манипуляция терминами</h4>
+                                <p class="text-slate-600">Использование слов "помощь", "подарок", "клуб" вместо "вклад", "инвестиции", "доход" для ухода от юридической ответственности и создания иллюзии безопасности.</p>
+                            </div>
+                        </div>
+                         <div class="flex items-start">
+                              <div class="flex-shrink-0 h-6 w-6 rounded-full bg-amber-500 text-white flex items-center justify-center mr-4 mt-1">✓</div>
+                            <div>
+                                <h4 class="font-semibold">Создание ажиотажа и FOMO</h4>
+                                <p class="text-slate-600">Публикация многочисленных отзывов о быстрых и легких деньгах для создания эффекта упущенной выгоды (Fear of Missing Out) и поощрения импульсивных решений.</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+                
+                <section id="comparison" class="section-card p-6 md:p-8">
+                    <h3 class="text-xl font-bold mb-4 text-slate-900">4. Сравнительный анализ</h3>
+                    <p class="mb-6 text-slate-600">"МММ 2.0" не является уникальным явлением. Его структура и идеология практически полностью копируют предыдущие проекты Сергея Мавроди, адаптируясь под современные цифровые реалии.</p>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left border-collapse">
+                            <thead>
+                                <tr class="bg-slate-100">
+                                    <th class="p-3 font-semibold text-sm">Параметр</th>
+                                    <th class="p-3 font-semibold text-sm">МММ (1990-е)</th>
+                                    <th class="p-3 font-semibold text-sm">МММ-2011</th>
+                                    <th class="p-3 font-semibold text-sm">МММ 2.0</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-slate-200">
+                                <tr>
+                                    <td class="p-3 font-medium">Основная платформа</td>
+                                    <td class="p-3 text-slate-600">Офисы, "билеты"</td>
+                                    <td class="p-3 text-slate-600">Веб-сайт, личные кабинеты</td>
+                                    <td class="p-3 text-slate-600">Соцсети, Telegram, криптокошельки</td>
+                                </tr>
+                                <tr>
+                                    <td class="p-3 font-medium">Идеология</td>
+                                    <td class="p-3 text-slate-600">"Народная компания"</td>
+                                    <td class="p-3 text-slate-600">Борьба с фин. системой</td>
+                                    <td class="p-3 text-slate-600">"Касса взаимопомощи", ностальгия</td>
+                                </tr>
+                                 <tr>
+                                    <td class="p-3 font-medium">Масштаб</td>
+                                    <td class="p-3 text-slate-600">Массовый, национальный</td>
+                                    <td class="p-3 text-slate-600">Международный, но меньше</td>
+                                    <td class="p-3 text-slate-600">Локальный, нишевый</td>
+                                </tr>
+                                <tr>
+                                    <td class="p-3 font-medium">Общие черты</td>
+                                    <td colspan="3" class="p-3 text-slate-600">Принцип пирамиды, высокие обещания, отсутствие реальной деятельности, иерархическая структура ("десятники"), неизбежный коллапс.</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <section id="risks" class="section-card p-6 md:p-8">
+                    <h3 class="text-xl font-bold mb-4 text-slate-900">5. Риски для участников</h3>
+                    <p class="mb-6 text-slate-600">Участие в проекте сопряжено с критическими рисками. Данные из отзывов и новостей свидетельствуют о систематических проблемах, с которыми сталкиваются вкладчики.</p>
+                    <div class="grid lg:grid-cols-2 gap-8 items-center">
+                        <div class="space-y-4">
+                            <div class="flex items-start">
+                                <span class="text-red-500 text-2xl mr-3 font-bold">!</span>
+                                <div><h4 class="font-semibold">Полная потеря средств</h4><p class="text-sm text-slate-600">Основной и практически неизбежный риск. Система рушится, как только приток новых участников замедляется.</p></div>
+                            </div>
+                            <div class="flex items-start">
+                                <span class="text-red-500 text-2xl mr-3 font-bold">!</span>
+                                <div><h4 class="font-semibold">Отсутствие юридической защиты</h4><p class="text-sm text-slate-600">Поскольку операции оформляются как "подарки", участники не имеют правовых оснований для возврата денег.</p></div>
+                            </div>
+                            <div class="flex items-start">
+                                <span class="text-red-500 text-2xl mr-3 font-bold">!</span>
+                                <div><h4 class="font-semibold">Проблемы с выводом</h4><p class="text-sm text-slate-600">Многочисленные жалобы на блокировку счетов и невозможность "запросить помощь" (вывести деньги) без объяснения причин.</p></div>
+                            </div>
+                        </div>
+                         <div>
+                            <h4 class="font-semibold mb-4 text-center">Гипотетическое распределение средств</h4>
+                            <div class="chart-container">
+                                <canvas id="riskChart"></canvas>
+                            </div>
+                            <p class="text-sm text-center mt-4 text-slate-500">В любой пирамиде подавляющее большинство участников (более 90%) теряют свои вложения.</p>
+                        </div>
+                    </div>
+                </section>
+                
+                <section id="status" class="section-card p-6 md:p-8">
+                    <h3 class="text-xl font-bold mb-4 text-slate-900">6. Общественный и правовой статус</h3>
+                    <p class="mb-6 text-slate-600">Проект имеет крайне негативную репутацию в экспертном сообществе и уже привлек внимание регуляторов, что подтверждает его высокий уровень опасности.</p>
+                    <div class="grid md:grid-cols-2 gap-6">
+                        <div class="p-4 bg-slate-50 rounded-lg">
+                            <h4 class="font-semibold mb-2">Восприятие в обществе</h4>
+                            <p class="text-slate-600">Большинство отзывов на независимых площадках и в СМИ носят резко негативный характер. Проект ассоциируется с мошенничеством и обманом.</p>
+                        </div>
+                        <div class="p-4 bg-slate-50 rounded-lg">
+                             <h4 class="font-semibold mb-2">Реакция регуляторов</h4>
+                            <p class="text-slate-600">Центральный Банк РФ внес проект "МММ 2.0" в список организаций с выявленными признаками финансовой пирамиды, официально предупредив граждан о рисках.</p>
+                        </div>
+                    </div>
+                </section>
+
+                <section id="conclusion" class="section-card p-6 md:p-8 bg-slate-800 text-white">
+                    <h3 class="text-xl font-bold mb-4">7. Итоговое заключение</h3>
+                    <p class="mb-6 text-slate-300">На основе всестороннего анализа собранной информации можно сделать однозначные выводы о природе и уровне угрозы проекта "МММ 2.0".</p>
+                    <div class="space-y-4">
+                        <div>
+                            <h4 class="text-lg font-semibold text-amber-400">Квалификация проекта</h4>
+                            <p>Проект "МММ 2.0" ("Касса взаимопомощи имени Мавроди") является финансовой пирамидой. Этот вывод основан на следующих неопровержимых фактах:
+                                <ul class="list-disc list-inside mt-2 text-slate-300 space-y-1">
+                                    <li>Отсутствие какой-либо реальной экономической или инвестиционной деятельности.</li>
+                                    <li>Выплаты дохода участникам осуществляются исключительно за счет взносов новых членов.</li>
+                                    <li>Обещания нереалистично высокой доходности, не имеющей экономического обоснования.</li>
+                                    <li>Акцент на привлечении новых участников как на основном источнике прибыли.</li>
+                                </ul>
+                            </p>
+                        </div>
+                        <div>
+                            <h4 class="text-lg font-semibold text-red-500">Оценка степени опасности</h4>
+                            <p>Степень опасности проекта для потенциальных инвесторов оценивается как <strong class="uppercase">критическая</strong>. Участие в данной схеме с вероятностью, близкой к 100%, приведет к полной потере вложенных средств без возможности их юридического возврата.</p>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const sections = document.querySelectorAll('section');
+            const navLinks = document.querySelectorAll('#nav-menu a');
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        navLinks.forEach(link => {
+                            link.classList.remove('active');
+                            if (link.getAttribute('href').substring(1) === entry.target.id) {
+                                link.classList.add('active');
+                            }
+                        });
+                    }
+                });
+            }, { rootMargin: '-30% 0px -70% 0px' });
+
+            sections.forEach(section => {
+                observer.observe(section);
+            });
+            
+            navLinks.forEach(anchor => {
+                anchor.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    document.querySelector(this.getAttribute('href')).scrollIntoView({
+                        behavior: 'smooth'
+                    });
+                });
+            });
+
+            const roiCtx = document.getElementById('roiChart').getContext('2d');
+            new Chart(roiCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['МММ 2.0', 'Банковский вклад', 'Акции (сред.)'],
+                    datasets: [{
+                        label: 'Доходность в месяц, %',
+                        data: [25, 0.8, 1.2],
+                        backgroundColor: [
+                            'rgba(239, 68, 68, 0.6)',
+                            'rgba(59, 130, 246, 0.6)',
+                            'rgba(34, 197, 94, 0.6)'
+                        ],
+                        borderColor: [
+                            'rgba(239, 68, 68, 1)',
+                            'rgba(59, 130, 246, 1)',
+                            'rgba(34, 197, 94, 1)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return context.dataset.label + ': ' + context.raw + '%';
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: '%'
+                            }
+                        }
+                    }
+                }
+            });
+
+            const riskCtx = document.getElementById('riskChart').getContext('2d');
+            new Chart(riskCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Участники, теряющие деньги', 'Организаторы и первые вкладчики'],
+                    datasets: [{
+                        data: [95, 5],
+                         backgroundColor: [
+                            'rgba(239, 68, 68, 0.6)',
+                            'rgba(34, 197, 94, 0.6)'
+                        ],
+                        borderColor: [
+                            'rgba(239, 68, 68, 1)',
+                             'rgba(34, 197, 94, 1)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                       legend: {
+                           position: 'bottom',
+                       },
+                       tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return context.label + ': ' + context.raw + '%';
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        });
+    </script>
+</body>
+</html>
